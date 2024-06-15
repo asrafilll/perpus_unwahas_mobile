@@ -1,59 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class PDFViewerPage extends StatefulWidget {
   final String bookUrl;
+  final String title;
 
-  const PDFViewerPage({super.key, required this.bookUrl});
+  const PDFViewerPage({super.key, required this.bookUrl, required this.title});
 
   @override
   State<PDFViewerPage> createState() => _PDFViewerPageState();
 }
 
 class _PDFViewerPageState extends State<PDFViewerPage> {
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(widget.bookUrl));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final String directDownloadUrl = getDirectDownloadUrl(widget.bookUrl);
-    print(directDownloadUrl);
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PDF Viewer'),
+        title: Text(widget.title),
       ),
-      body: FutureBuilder<String>(
-        future: Future.value(directDownloadUrl),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasData) {
-              return PDFView(
-                filePath: snapshot.data!,
-                enableSwipe: true,
-                swipeHorizontal: true,
-                autoSpacing: false,
-                pageFling: false,
-                onRender: (pages) {
-                  // No need for setState
-                },
-              );
-            } else {
-              return const Center(child: Text('Error loading PDF'));
-            }
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+      body: WebViewWidget(controller: _controller),
     );
-  }
-}
-
-String getDirectDownloadUrl(String driveUrl) {
-  final RegExp regex = RegExp(r'/d/(.+?)/');
-  final String? fileId = regex.firstMatch(driveUrl)?.group(1);
-
-  if (fileId != null) {
-    return 'https://drive.google.com/uc?export=download&id=$fileId';
-  } else {
-    return driveUrl; // Return the original URL if file ID is not found
   }
 }

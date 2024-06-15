@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 class BookModel {
   final int id;
   final String title;
@@ -31,12 +33,12 @@ class BookModel {
       title: json['title'],
       teachers: json['teachers'],
       cover: json['cover'],
-      year: json['year'],
+      year: int.parse(json['year']),
       course: json['course'],
       isbn: json['ISBN'],
       url: json['url'],
-      categoryId: json['categoryId'],
-      createdAt: json['createdAt'],
+      categoryId: int.parse(json['categoryId']),
+      createdAt: json['created_at'],
       category: CategoryModel.fromJson(json['category']),
     );
   }

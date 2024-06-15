@@ -41,6 +41,8 @@ class LoginController extends GetxController {
 
     isLoading.value = false;
 
+    print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
 

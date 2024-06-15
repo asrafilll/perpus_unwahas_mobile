@@ -52,11 +52,12 @@ class HomeController extends GetxController {
       isLoading(true);
       final response = await http
           .get(Uri.parse('${AppConstants.baseURL}${APIURL.getAllBooks}'));
+
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        books.value = List<dynamic>.from(jsonData['data'])
-            .map((book) => BookModel.fromJson(book))
-            .toList();
+        final List<dynamic> jsonData =
+            json.decode(response.body); // Direct list decoding
+        books.value =
+            jsonData.map((bookData) => BookModel.fromJson(bookData)).toList();
       } else {
         print('Failed to fetch books. Status code: ${response.statusCode}');
       }

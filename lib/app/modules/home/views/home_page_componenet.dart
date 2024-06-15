@@ -3,20 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:perpus_unwahas_mobile/app/modules/home/controllers/BookModel.dart';
+import 'package:perpus_unwahas_mobile/app/modules/home/views/book_card.dart';
+import 'package:perpus_unwahas_mobile/app/modules/home/views/pdf_read_page.dart';
 import 'package:perpus_unwahas_mobile/app/modules/home/views/pdf_viewer_page.dart';
 import 'package:perpus_unwahas_mobile/utils/app_colors.dart';
 import 'package:perpus_unwahas_mobile/utils/app_constans.dart';
+import 'package:perpus_unwahas_mobile/utils/download_link.dart';
 
-class HomePageComponent extends StatelessWidget {
+class HomePageComponent extends StatefulWidget {
   final List<BookModel> books;
 
   const HomePageComponent({super.key, required this.books});
+
+  @override
+  State<HomePageComponent> createState() => _HomePageComponentState();
+}
+
+class _HomePageComponentState extends State<HomePageComponent> {
+  bool isDownloading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
@@ -46,21 +57,30 @@ class HomePageComponent extends StatelessWidget {
               ],
             ),
           ),
+          const Padding(
+            padding: EdgeInsets.only(left: 16, top: 16),
+            child: Text(
+              'List Buku',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Expanded(
             child: Obx(
               () => ListView.builder(
-                itemCount: books.length,
+                itemCount: widget.books.length,
                 itemBuilder: (context, index) {
-                  final book = books[index];
-                  return _buildBookCard(
-                    context,
-                    book.cover,
-                    book.title,
-                    'Penulis: ${book.teachers}',
-                    'Kategori: ${book.category.name}',
-                    'Bahasa: Indonesia',
-                    book.url,
-                  );
+                  final book = widget.books[index];
+                  return BookCard(
+                      context: context,
+                      imageUrl: book.cover,
+                      title: book.title,
+                      author: book.teachers,
+                      category: book.category.name,
+                      year: book.year.toString(),
+                      url: book.url);
                 },
               ),
             ),
@@ -70,23 +90,31 @@ class HomePageComponent extends StatelessWidget {
     );
   }
 
-  Widget _buildBookCard(BuildContext context, String imageUrl, String title,
-      String author, String category, String language, String url) {
+  Widget _buildBookCard(
+      BuildContext context,
+      String imageUrl,
+      String title,
+      String author,
+      String category,
+      String year,
+      String url,
+      bool isDownloading) {
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
               '${AppConstants.imgURL}$imageUrl',
-              width: 100,
-              height: 150,
+              width: 80,
+              height: 140,
               fit: BoxFit.cover,
+              alignment: Alignment.center,
             ),
-            const SizedBox(width: 16.0),
+            const SizedBox(width: 12.0),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,31 +126,35 @@ class HomePageComponent extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8.0),
+                  const SizedBox(height: 4.0),
                   Text(author),
                   Text(category),
-                  Text(language),
-                  const SizedBox(height: 16.0),
-                  Column(
+                  Text(year),
+                  const SizedBox(height: 8.0),
+                  Row(
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          _openBookInApp(context, url);
+                          _openBookInApp(context, url, title);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                         ),
                         child: const Text(
-                          'Baca Sekarang',
+                          'Baca',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                      const SizedBox(width: 16.0),
+                      const SizedBox(width: 4.0),
                       OutlinedButton(
-                        onPressed: () {
-                          _downloadPDF(context, url);
-                        },
-                        child: const Text('Download Buku'),
+                        onPressed: isDownloading
+                            ? null
+                            : () {
+                                _downloadPDF(context, url, title);
+                              },
+                        child: isDownloading
+                            ? const Text('Downloading')
+                            : const Text('Download'),
                       ),
                     ],
                   ),
@@ -134,42 +166,92 @@ class HomePageComponent extends StatelessWidget {
       ),
     );
   }
+
+  void _downloadPDF(
+    BuildContext context,
+    String bookUrl,
+    String title,
+  ) async {
+    setState(() {
+      isDownloading = true;
+    });
+
+    final dio = Dio();
+    final directory = await getApplicationDocumentsDirectory();
+    final fileName = bookUrl.split('/').last;
+    final filePath = '${directory.path}/$fileName';
+
+    try {
+      final directDownloadUrl = getDirectDownloadUrl(bookUrl);
+      final response = await dio.download(directDownloadUrl, filePath);
+
+      if (response.statusCode == 200) {
+        // Use mounted check before showing the modal
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('PDF Downloaded'),
+                content: Text('The PDF has been saved to:\n$filePath'),
+                actions: [
+                  TextButton(
+                    child: const Text('Open PDF'),
+                    onPressed: () {
+                      Navigator.pop(context); // Close the modal
+                      setState(() {
+                        isDownloading = false;
+                      });
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PDFReadPage(filePath: filePath, title: title),
+                        ),
+                      );
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Close'),
+                    onPressed: () {
+                      Navigator.pop(context); // Close the modal
+                      setState(() {
+                        isDownloading = false;
+                      });
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PDF download failed')),
+        );
+        setState(() {
+          isDownloading = false;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error downloading PDF: $e')),
+      );
+      setState(() {
+        isDownloading = false;
+      });
+    }
+  }
 }
 
-void _openBookInApp(BuildContext context, String bookUrl) {
+void _openBookInApp(BuildContext context, String bookUrl, String title) {
   Navigator.push(
     context,
     MaterialPageRoute(
-      builder: (context) => PDFViewerPage(bookUrl: bookUrl),
+      builder: (context) => PDFViewerPage(
+        bookUrl: bookUrl,
+        title: title,
+      ),
     ),
   );
-}
-
-void _downloadPDF(BuildContext context, String bookUrl) async {
-  final dio = Dio();
-  final directory = await getApplicationDocumentsDirectory();
-  final fileName = bookUrl.split('/').last;
-  final filePath = '${directory.path}/$fileName';
-
-  try {
-    final response = await dio.download(bookUrl, filePath);
-    if (response.statusCode == 200) {
-      // PDF downloaded successfully
-      // Show a success message or perform any other actions
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF downloaded successfully')),
-      );
-    } else {
-      // PDF download failed
-      // Show an error message or handle the failure scenario
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF download failed')),
-      );
-    }
-  } catch (e) {
-    // Handle any errors that occur during the download
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error downloading PDF: $e')),
-    );
-  }
 }
