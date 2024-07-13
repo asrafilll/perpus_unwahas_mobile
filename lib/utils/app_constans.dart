@@ -9,6 +9,7 @@ class AppConstants {
 class APIURL {
   static const register = '/students';
   static const login = '/students/login';
+  static const updatePassword = '/students/forgot-password';
 
   // <!-- BOOKS -->
   static const getAllBooks = '/books';

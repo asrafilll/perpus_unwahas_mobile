@@ -41,9 +41,9 @@ class HomeView extends GetView<HomeController> {
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.category), label: 'Category'),
+                  icon: Icon(Icons.apps), label: 'Kategori'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.person), label: 'Setting'),
+                  icon: Icon(Icons.person), label: 'Pengaturan'),
             ],
           )),
     );

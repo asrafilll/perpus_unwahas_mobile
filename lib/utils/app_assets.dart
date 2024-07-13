@@ -4,6 +4,7 @@ abstract class AppAssets {
 
   // <!----- Images ----->
   static const primaryLogo = '$_baseImagePath/logo.png';
+  static const manajemenLogo = '$_baseImagePath/logomanajemen.png';
   static const poweredBy = '$_baseImagePath/poweredby.png';
 
   // // <!----- Icons ----->

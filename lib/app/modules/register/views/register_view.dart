@@ -32,12 +32,12 @@ class RegisterView extends GetView<RegisterController> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Perpustakaan Digital Manajemen Unwahas'.toUpperCase(),
+                  'Perpustakaan Digital\nProdi Manajemen'.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.titleTextStyle.copyWith(fontSize: 18),
                 ),
                 Text(
-                  'Fakultas Ekonomi & Manajemen Unwahas'.toUpperCase(),
+                  'FAKULTAS EKONOMI & BISNIS UNWAHAS'.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.titleTextStyle.copyWith(fontSize: 14),
                 ),

@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:perpus_unwahas_mobile/app/modules/login/views/forgot_passowrd_view.dart';
+import 'package:perpus_unwahas_mobile/app/modules/login/controllers/login_controller.dart';
 import 'package:perpus_unwahas_mobile/components/primary_button.dart';
 import 'package:perpus_unwahas_mobile/utils/app_assets.dart';
 import 'package:perpus_unwahas_mobile/utils/app_text_styles.dart';
-import '../controllers/login_controller.dart';
 
-class LoginView extends GetView<LoginController> {
-  const LoginView({super.key});
+class ForgotPasswordView extends GetView<LoginController> {
+  const ForgotPasswordView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +21,7 @@ class LoginView extends GetView<LoginController> {
               children: [
                 const SizedBox(height: 48),
                 const Text(
-                  'Login Library',
+                  'Reset Password',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -52,10 +51,28 @@ class LoginView extends GetView<LoginController> {
                 const SizedBox(height: 10),
                 Obx(
                   () => TextField(
-                    controller: controller.passwordController,
+                    controller: controller.newPasswordController,
                     obscureText: controller.isObscured.value,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'New Password',
+                      suffixIcon: IconButton(
+                          icon: Icon(
+                            controller.isObscured.value
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Theme.of(context).primaryColorDark,
+                          ),
+                          onPressed: () => {controller.seePassword()}),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Obx(
+                  () => TextField(
+                    controller: controller.confirmPasswordController,
+                    obscureText: controller.isObscured.value,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm New Password',
                       suffixIcon: IconButton(
                           icon: Icon(
                             controller.isObscured.value
@@ -72,36 +89,22 @@ class LoginView extends GetView<LoginController> {
                       onTap: controller.isLoading.value
                           ? null
                           : () {
-                              controller.loginStudent();
+                              controller.updatePassword();
                             },
-                      textButton:
-                          controller.isLoading.value ? 'Loading...' : 'Login',
+                      textButton: controller.isLoading.value
+                          ? 'Loading...'
+                          : 'Reset Password',
                     )),
-                Column(
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Get.toNamed('/register');
-                      },
-                      child: const Text(
-                        'Belum punya akun? Daftar',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 143, 143, 143),
-                        ),
-                      ),
+                TextButton(
+                  onPressed: () {
+                    Get.back(); // Go back to login page
+                  },
+                  child: const Text(
+                    'Back to Login',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 143, 143, 143),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Get.to(() => const ForgotPasswordView());
-                      },
-                      child: const Text(
-                        'Lupa password? Reset Password',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 143, 143, 143),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 const SizedBox(height: 40),
                 Image.asset(AppAssets.poweredBy),

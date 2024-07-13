@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:perpus_unwahas_mobile/app/modules/setting/views/change_password_view.dart';
 import 'package:perpus_unwahas_mobile/utils/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../controllers/setting_controller.dart';
 
 class SettingView extends GetView<SettingController> {
@@ -8,41 +10,75 @@ class SettingView extends GetView<SettingController> {
 
   @override
   Widget build(BuildContext context) {
+    final SettingController controller = Get.find<SettingController>();
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Pengaturan',
+        ),
+        backgroundColor: AppColors.primaryColor,
+        foregroundColor: Colors.white,
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.2,
-            color: AppColors.primaryColor,
-            padding: const EdgeInsets.only(left: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+          // Container(
+          //   width: double.infinity,
+          //   height: MediaQuery.of(context).size.height * 0.2,
+          //   color: AppColors.primaryColor,
+          //   padding: const EdgeInsets.only(left: 24),
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       const SizedBox(height: 8),
+          //       Text(
+          //         'Perpustakaan Digital\nManajemen Unwahas'.toUpperCase(),
+          //         style: const TextStyle(
+          //           color: Colors.white,
+          //           fontWeight: FontWeight.bold,
+          //           fontSize: 16,
+          //         ),
+          //       ),
+          //       const Text(
+          //         'Fakultas Ekonomi dan Manajemen Unwahas',
+          //         style: TextStyle(
+          //           color: Colors.white,
+          //           fontSize: 12,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // const SizedBox(height: 32),
+
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 8),
-                Text(
-                  'Perpustakaan Digital\nManajemen Unwahas'.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const Text(
-                  'Fakultas Ekonomi dan Manajemen Unwahas',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
+                const Icon(Icons.account_circle, size: 72),
+                const SizedBox(width: 8),
+                Obx(
+                  () => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        controller.studentData['user']['name'],
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        controller.studentData['user']['NIM'],
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 32),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.only(left: 16, right: 16, top: 16),
             child: Text(
               'Settings',
               style: TextStyle(
@@ -62,10 +98,19 @@ class SettingView extends GetView<SettingController> {
                 onTap: () {},
               ),
               _buildSettingTile(
-                title: 'Contact Admin',
-                icon: Icons.contact_support_outlined,
-                onTap: () {},
+                title: 'Change Password',
+                icon: Icons.lock,
+                onTap: () {
+                  Get.to(() => const ChangePasswordView());
+                },
               ),
+              _buildSettingTile(
+                  title: 'Contact Admin',
+                  icon: Icons.contact_support_outlined,
+                  onTap: () async {
+                    String url = 'https://wa.me/628112892827';
+                    launchUrl(Uri.parse(url));
+                  }),
               _buildSettingTile(
                 title: 'Logout',
                 icon: Icons.logout,

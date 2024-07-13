@@ -6,7 +6,7 @@ import 'package:perpus_unwahas_mobile/app/modules/home/controllers/BookModel.dar
 import 'package:perpus_unwahas_mobile/app/modules/home/views/book_card.dart';
 import 'package:perpus_unwahas_mobile/app/modules/home/views/pdf_read_page.dart';
 import 'package:perpus_unwahas_mobile/app/modules/home/views/pdf_viewer_page.dart';
-import 'package:perpus_unwahas_mobile/utils/app_colors.dart';
+import 'package:perpus_unwahas_mobile/utils/app_assets.dart';
 import 'package:perpus_unwahas_mobile/utils/app_constans.dart';
 import 'package:perpus_unwahas_mobile/utils/download_link.dart';
 
@@ -25,34 +25,51 @@ class _HomePageComponentState extends State<HomePageComponent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        toolbarHeight: 0,
+      ),
       backgroundColor: Colors.white,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.2,
-            color: AppColors.primaryColor,
-            padding: const EdgeInsets.only(left: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 8),
-                Text(
-                  'Perpustakaan Digital\nManajemen Unwahas'.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+            margin: const EdgeInsets.only(left: 16, right: 16),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Color.fromARGB(255, 207, 207, 207),
                 ),
-                const Text(
-                  'Fakultas Ekonomi dan Manajemen Unwahas',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 8),
+                    Text(
+                      'Selamat datang di',
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      'PERPUSTAKAAN DIGITAL\nPRODI MANAJEMEN',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                Image.asset(
+                  AppAssets.manajemenLogo,
+                  width: 100,
+                  height: 100,
                 ),
               ],
             ),

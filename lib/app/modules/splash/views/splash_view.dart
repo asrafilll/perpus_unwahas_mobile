@@ -23,14 +23,9 @@ class SplashView extends GetView<SplashController> {
             Image.asset(AppAssets.primaryLogo),
             const SizedBox(height: 8),
             Text(
-              'Perpustakaan Digital\nManajemen Unwahas'.toUpperCase(),
+              'Fakultas Ekonomi &\nManajemen Unwahas'.toUpperCase(),
               textAlign: TextAlign.center,
-              style: AppTextStyles.titleTextStyle,
-            ),
-            Text(
-              'Fakultas Ekonomi & Manajemen Unwahas'.toUpperCase(),
-              textAlign: TextAlign.center,
-              style: AppTextStyles.primaryTextStyle,
+              style: AppTextStyles.primaryTextStyle.copyWith(fontSize: 18),
             )
           ],
         ),
